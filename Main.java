@@ -7,12 +7,12 @@ import java.io.PrintStream;
 import java.lang.Integer;
 
 /**
- * Programa que recibe como entrada un archivo (.input) con
- * un conjunto de nombres de cursos junto con sus
- * prerequisitos.
- * Computa los prerequisitos inmediatos  para cada
- * curso y las escribe en el archivo de salida. 
- * Sintaxis: java Main <archivo.input> <archivo.output>
+ * Programa que recibe como entrada un archivo que
+ * contiene un calabozo medieval.
+ * Produce un arhivo de salida en el que indica "Atrapado!" 
+ * se encuentra atrapado o "Escape en x minutos" si logro 
+ * escapar en x minutos.
+ * Sintaxis: java Main <archivo_entrada> <archivo_salida>
  *
  * @author José A. Goncalves y Jennifer Dos Reis
  * @version 1.0
@@ -21,8 +21,9 @@ import java.lang.Integer;
 
 public class Main {
 
-    public DiGraph cargarArchivo(String nombre, Integer S, Integer E) {
-	BufferedReader in = new BufferedReader(nombre);
+    public static DiGraph cargarArchivo(String nombre, Integer S, Integer E) 
+		throws NumberFormatException, FileNotFoundException, IOException {
+	BufferedReader in = new BufferedReader(new FileReader(nombre));
 	String datos = in.readLine();
 	String[] tokens = datos.split(" ");
 
@@ -41,14 +42,14 @@ public class Main {
 		for (int j=0; j<numColumnas; j++) {
 		    numNodo++;
 		    char caracter = linea.charAt(j);
-		    if (caracter=="#") {
+		    if (caracter=='#') {
 			tipoNodos[numNodo] = false;
 		    } else {
 			tipoNodos[numNodo] = true;
-			if (caracter == "S" ) {
+			if (caracter == 'S' ) {
 			    S = new Integer(numNodo);
 			}
-			if (caracter == "E" ) {
+			if (caracter == 'E' ) {
 			    E = new Integer(numNodo);
 		        }
 			//Si no es el 1º caracter
@@ -83,9 +84,9 @@ public class Main {
 
     }
 
-    public int BFS(DiGraph grafo, Integer S, Integer E) {
+    public static int BFS(DiGraph grafo, Integer S, Integer E) {
 
-    }
+    return 0; }
 
     public static void main(String[] args){
 	
@@ -99,7 +100,17 @@ public class Main {
 	DiGraph grafo = null;
 	try {
 	    grafo = cargarArchivo(args[0],S,E);
-	} catch ...
+
+	}catch(NumberFormatException e) {
+	    System.err.println("Error de formato en el archivo especificado");
+	    return;
+	}catch (FileNotFoundException fnfe) {
+	    System.err.println("Error al cargar archivo, verifique el nombre");
+	    return;
+	} catch(IOException ioe) {
+	    System.err.println("Error: " + ioe);
+	    return;
+	}
 
 	int tiempo = BFS(grafo,S,E);
 
@@ -121,8 +132,3 @@ public class Main {
     }
 
 }
-
-
-
-
-
