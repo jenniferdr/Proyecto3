@@ -22,11 +22,12 @@ import java.lang.Integer;
 
 public class Main {
 
-    public static DiGraph cargarArchivo(String nombre, Integer S, Integer E) 
+    public static Object[] cargarArchivo(String nombre) 
 		throws NumberFormatException, FileNotFoundException, IOException {
 	BufferedReader in = new BufferedReader(new FileReader(nombre));
 	String datos = in.readLine();
 	String[] tokens = datos.split(" ");
+	Object[] elementos= new Object[3];
 
 	int numPisos = Integer.parseInt(tokens[0]);
 	int numFilas = Integer.parseInt(tokens[1]);
@@ -48,10 +49,10 @@ public class Main {
 		    } else {
 			tipoNodos[numNodo] = true;
 			if (caracter == 'S' ) {
-			    S = new Integer(numNodo);
+			    elementos[1]= new Integer(numNodo);
 			}
 			if (caracter == 'E' ) {
-			    E = new Integer(numNodo);
+			    elementos[2]= new Integer(numNodo);
 		        }
 			//Si no es el 1º caracter
 			// Evaluar nodo 'oeste'
@@ -80,8 +81,9 @@ public class Main {
 	    //Esto lee la linea en blanco que separa cada piso
 	    String tmp = in.readLine();
 	}
-
-	return salida;
+	// Devuelve un arreglo con un Digraph, numero de nodo S y numero de nodo E
+	elementos[0]= salida;
+	return elementos;
 
     }
 
@@ -121,17 +123,20 @@ public class Main {
 
     public static void main(String[] args){
 	
-	if (args.length != 2 && args.length !=1) {
+	if (args.length != 2) {
 	    System.err.println("Sintaxis: java Main <fileName_entrada> <fileName_salida>");
 	    return;
 	}
 
-	Integer S = null;
-	Integer E = null;
+	Integer S;
+	Integer E;
+	Object[] elementos= null;
 	DiGraph grafo = null;
 	try {
-	    grafo = cargarArchivo(args[0],S,E);
-	    System.out.println(S +"e: "+E);
+	    elementos = cargarArchivo(args[0]);
+	    grafo= (DiGraph)elementos[0];
+	    S = (Integer) elementos[1];
+	    E = (Integer) elementos[2];
 	} catch(NumberFormatException e) {
 	    System.err.println("Error de formato en el archivo especificado");
 	    return;
