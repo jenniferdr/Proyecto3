@@ -19,6 +19,7 @@ import java.lang.Integer;
  * @since 1.6
 **/
 
+
 public class Main {
 
     public static DiGraph cargarArchivo(String nombre, Integer S, Integer E) 
@@ -28,12 +29,12 @@ public class Main {
 	String[] tokens = datos.split(" ");
 
 	int numPisos = Integer.parseInt(tokens[0]);
-	int numColumnas = Integer.parseInt(tokens[1]);
-	int numFilas = Integer.parseInt(tokens[2]);
+	int numFilas = Integer.parseInt(tokens[1]);
+	int numColumnas = Integer.parseInt(tokens[2]);
 
 	DiGraph salida = new DiGraphList(numPisos*numColumnas*numFilas);
 	boolean[] tipoNodos = new boolean[numPisos*numColumnas*numFilas];
-	int numNodo = 0;
+	int numNodo = -1;
 
 	for (int i=0; i<numPisos; i++) {
 	    for (int k=0; k<numFilas; k++) {
@@ -84,9 +85,38 @@ public class Main {
 
     }
 
-    public static int BFS(DiGraph grafo, Integer S, Integer E) {
+    public static int escapar(DiGraph grafo, Integer S, Integer E) {
+	int nodoS = S.intValue();
+	int nodoE = E.intValue();
+
+    	boolean[] visitados = new boolean[grafo.getNumberOfNodes()];
+	for (int i=0; i<visitados.length; i++) {
+	    visitados[i] = false;
+	}
 	
-    	return 0;
+	Cola<Camino> caminos = new Cola<Camino>();
+	//abrir S
+	visitados[nodoS] = true;
+	caminos.encolar(new Camino(null, 0, nodoS));
+
+	while (!caminos.vacia()) {
+	    Camino caminoTmp = caminos.desencolar();
+	    int nodoPred = caminoTmp.getNodoTerm();
+	    int costoPred = caminoTmp.getCosto();
+
+	    List<Integer> sucesores = grafo.getSucesors(nodoPred);
+	    for (int i=0; i<sucesores.size(); i++) {
+		int nodoSuc = sucesores.get(i).intValue();
+		if (nodoSuc == nodoE) {
+		    return costoPred+1;
+		}
+		if (!visitados[nodoSuc]) {
+		    visitados[nodoSuc] = true;
+		    caminos.encolar(new Camino(caminoTmp, costoPred+1, nodoSuc));
+		}
+	    }
+	}
+	return -1;
     }
 
     public static void main(String[] args){
@@ -101,11 +131,11 @@ public class Main {
 	DiGraph grafo = null;
 	try {
 	    grafo = cargarArchivo(args[0],S,E);
-
-	}catch(NumberFormatException e) {
+	    System.out.println(S +"e: "+E);
+	} catch(NumberFormatException e) {
 	    System.err.println("Error de formato en el archivo especificado");
 	    return;
-	}catch (FileNotFoundException fnfe) {
+	} catch (FileNotFoundException fnfe) {
 	    System.err.println("Error al cargar archivo, verifique el nombre");
 	    return;
 	} catch(IOException ioe) {
@@ -113,13 +143,13 @@ public class Main {
 	    return;
 	}
 
-	int tiempo = BFS(grafo,S,E);
+	int tiempo = escapar(grafo,S,E);
 
 	String salida = "";
-	if (tiempo==0) {
+	if (tiempo==-1) {
 	    salida = "Atrapado!";
 	} else {
-	    salida = "bla";
+	    salida = "Escape en "+tiempo+" minutos(s).";
 	}
 
 	//escribir salida al archivo
