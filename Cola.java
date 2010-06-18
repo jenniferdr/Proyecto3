@@ -34,21 +34,21 @@ public class Cola<E>{
 	    if(this.tam==0){  
 	    	this.primero= caja;
 		this.ultimo= caja;
-
 	    }else{
-	    	this.ultimo.siguiente.setSiguiente(caja);
+	    	this.ultimo.setSiguiente(caja);
 	    	this.ultimo= caja;
 	    }
 	    this.tam++; 
 	}
 
 	public E desencolar(){
+
 	    E primerElem= (E)this.primero.elemento;
 	    if(this.tam==1){
-	    this.primero=null;
-	    this.ultimo=null;
+	    	this.primero=null;
+	    	this.ultimo=null;
 	    }else{
-	    this.primero= this.primero.siguiente;
+	    	this.primero= this.primero.siguiente;
 	    }
 	    this.tam--;
 	    return primerElem;
