@@ -152,9 +152,9 @@ public class Main {
 
 	String salida = "";
 	if (tiempo==-1) {
-	    salida = "Atrapado!";
+	    salida = "Atrapado!\n";
 	} else {
-	    salida = "Escape en "+tiempo+" minutos(s).";
+	    salida = "Escape en "+tiempo+" minuto(s).\n";
 	}
 
 	//escribir salida al archivo
