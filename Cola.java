@@ -21,7 +21,7 @@ public class Cola<E>{
 	    }
 
 	    public void setSiguiente(ElemCola sig){
-		
+		this.siguiente= sig;
 	    }
 	}
 
@@ -31,14 +31,28 @@ public class Cola<E>{
 
 	public void encolar(E elem){
 	    ElemCola caja= new ElemCola(elem);
-	    this.ultimo.siguiente.setSiguiente(caja);
-	    this.ultimo= caja; 
+	    if(this.tam==0){  
+	    	this.primero= caja;
+		this.ultimo= caja;
+
+	    }else{
+	    	this.ultimo.siguiente.setSiguiente(caja);
+	    	this.ultimo= caja;
+	    }
+	    this.tam++; 
 	}
 
 	public E desencolar(){
 	    E primerElem= (E)this.primero.elemento;
+	    if(this.tam==1){
+	    this.primero=null;
+	    this.ultimo=null;
+	    }else{
 	    this.primero= this.primero.siguiente;
+	    }
+	    this.tam--;
 	    return primerElem;
 	} 
+	 
 
 }
