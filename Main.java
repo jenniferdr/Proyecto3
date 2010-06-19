@@ -10,8 +10,8 @@ import java.lang.Integer;
  * Programa que recibe como entrada un archivo que
  * contiene un calabozo medieval.
  * Produce un archivo de salida en el que indica "Atrapado!" 
- * si se encuentra atrapado o "Escape en x minutos" si hay 
- * una salida y cuánto tarda recorrerla.
+ * si se encuentra atrapado o "Escape en x minutos" si logró  
+ * escapar, con x la cantidad de minutos que tarda en salir.
  * Sintaxis: java Main <archivo_entrada> <archivo_salida>
  *
  * @author José A. Goncalves y Jennifer Dos Reis
