@@ -9,9 +9,9 @@ import java.lang.Integer;
 /**
  * Programa que recibe como entrada un archivo que
  * contiene un calabozo medieval.
- * Produce un arhivo de salida en el que indica "Atrapado!" 
- * se encuentra atrapado o "Escape en x minutos" si logro 
- * escapar en x minutos.
+ * Produce un archivo de salida en el que indica "Atrapado!" 
+ * si se encuentra atrapado o "Escape en x minutos" si hay 
+ * una salida y cuánto tarda recorrerla.
  * Sintaxis: java Main <archivo_entrada> <archivo_salida>
  *
  * @author José A. Goncalves y Jennifer Dos Reis
@@ -21,7 +21,15 @@ import java.lang.Integer;
 
 
 public class Main {
-
+    /**
+     * A partir del archivo de calabozo lo carga
+     * y devuelve un arreglo de tamaño 3 cuyo primera posición es un DiGraph
+     * correspondiente a la representación del calabozo; la segunda
+     * y tercera posición son Integer que contienen cuál es el nodo S y el
+     * nodo E, respectivamente.
+     * @param nombre Nombre del archivo del calabozo
+     * @return Un arreglo de Object de tamaño 3, cuyo contenido ya fue descrito.
+     */
     public static Object[] cargarArchivo(String nombre) 
 		throws NumberFormatException, FileNotFoundException, IOException {
 	BufferedReader in = new BufferedReader(new FileReader(nombre));
@@ -33,8 +41,9 @@ public class Main {
 	int numFilas = Integer.parseInt(tokens[1]);
 	int numColumnas = Integer.parseInt(tokens[2]);
 
-	DiGraph salida = new DiGraphList(numPisos*numColumnas*numFilas);
-	boolean[] tipoNodos = new boolean[numPisos*numColumnas*numFilas];
+	int totalNodos = numPisos*numColumnas*numFilas;
+	DiGraph salida = new DiGraphList(totalNodos);
+	boolean[] tipoNodos = new boolean[totalNodos];
 	int numNodo = -1;
 
 	for (int i=0; i<numPisos; i++) {
@@ -57,22 +66,25 @@ public class Main {
 			//Si no es el 1º caracter
 			// Evaluar nodo 'oeste'
 			if (j!=0 && tipoNodos[numNodo-1]) {
-			    Arc tmp = salida.addArc(numNodo, numNodo-1);
-			    tmp = salida.addArc(numNodo-1, numNodo);
+			    int nodoOeste = numNodo-1;
+			    Arc tmp = salida.addArc(numNodo, nodoOeste);
+			    tmp = salida.addArc(nodoOeste, numNodo );
 			}
 
 			//Si no es la primera linea
 			// Evaluar nodo 'norte'
 			if (k!=0 && tipoNodos[numNodo-numColumnas]) {
-			    Arc tmp = salida.addArc(numNodo, numNodo-numColumnas);
-			    tmp = salida.addArc(numNodo-numColumnas, numNodo);
+			    int nodoNorte = numNodo-numColumnas;
+			    Arc tmp = salida.addArc(numNodo, nodoNorte);
+			    tmp = salida.addArc(nodoNorte, numNodo);
 			}
 
-			//Si no es el primer piso
-			// Evaluar nodo 'piso arriba'
+			//Si no es el último piso
+			// Evaluar nodo 'piso abajo'
 			if (i!=0 && tipoNodos[numNodo-numColumnas*numFilas]) {
-			    Arc tmp = salida.addArc(numNodo, numNodo-numColumnas*numFilas);
-			    tmp = salida.addArc(numNodo-numColumnas*numFilas, numNodo);
+			    int nodoAbajo = numNodo - numColumnas*numFilas;
+			    Arc tmp = salida.addArc(numNodo, nodoAbajo);
+			    tmp = salida.addArc(nodoAbajo, numNodo);
 			}
 		    }
 		    
@@ -82,16 +94,42 @@ public class Main {
 	    String tmp = in.readLine();
 	}
 	// Devuelve un arreglo con un Digraph, numero de nodo S y numero de nodo E
-	elementos[0]= salida;
+	elementos[0] = salida;
 	return elementos;
 
     }
 
+    /**
+     * Dado un grafo (que representa el calabozo), un nodo inicial y un nodo
+     * final aplica un algoritmo de BFS modificado para conseguir y devolver 
+     * el camino de longitud mínima entre los nodos dados. 
+     * Si no hay camino o los nodos no existen, devuelve -1.
+     * @param grafo La representación del calabozo.
+     * @param S Start, el nodo inicial donde comienza la búsqueda.
+     * @param E End, el nodo donde termina la búsqueda.
+     * @return La distancia mínima entre el nodo S y el E.
+     *         -1 si no hay camino entre ellos.
+     *         -2 si alguno de los nodos no existe
+     */
     public static int escapar(DiGraph grafo, Integer S, Integer E) {
 	int nodoS = S.intValue();
 	int nodoE = E.intValue();
+	int totalNodos = grafo.getNumberOfNodes();
 
-    	boolean[] visitados = new boolean[grafo.getNumberOfNodes()];
+	//Si el inciio y el fin son los mismos, entonces no hay nada que hacer
+	if (nodoS==nodoE) {
+	    return 0;
+	}
+
+	//Chequeamos a ver si los nodos son válidos
+	if (nodoS<0 || nodoE<0 || nodoS > totalNodos || nodoE>totalNodos) {
+	    return -2;
+	}
+
+	//Utilizamos un arreglo de booleanos para determinar fácilmente
+	//si ya abrimos o cerramos un camino a un nodo específico
+	//true-> Ya abrimos/cerramos a ese nodo, false->Lo contrario
+    	boolean[] visitados = new boolean[totalNodos];
 	for (int i=0; i<visitados.length; i++) {
 	    visitados[i] = false;
 	}
@@ -109,6 +147,8 @@ public class Main {
 	    List<Integer> sucesores = grafo.getSucesors(nodoPred);
 	    for (int i=0; i<sucesores.size(); i++) {
 		int nodoSuc = sucesores.get(i).intValue();
+		//Cuando conseguimos a E por 1º vez ya sabemos 
+		//la longitud mínima, entonces terminamos
 		if (nodoSuc == nodoE) {
 		    return costoPred+1;
 		}
@@ -118,6 +158,8 @@ public class Main {
 		}
 	    }
 	}
+	//Si llegamos hast aquí quiere decir que ya expandimos todos los caminos
+	//posibles y que nunca encontramos a E, entonces no existía camino C(S,E)
 	return -1;
     }
 
