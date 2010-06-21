@@ -1,5 +1,5 @@
 /**
- * Clase que implementa una Cola
+ * Clase que implementa una Cola genérica
  *
  * @author José A. Goncalves y Jennifer Dos Reis
  * @version 1.0
@@ -11,6 +11,11 @@ public class Cola<E>{
 	private ElemCola ultimo=null;
 	private int tam = 0;
 
+	/**
+	 * Clase que representa a un elemento en la cola.
+	 * Cada elemento tiene un apuntador al elemento
+	 * que viene después en la cola.
+	 */
 	private class ElemCola<E> {
 	    public E elemento;
 	    public ElemCola siguiente;
@@ -25,10 +30,18 @@ public class Cola<E>{
 	    }
 	}
 
+	/**
+	 * Determina si la cola posee algún elemento
+	 * @return True si no hay elementos, false en caso contrario
+	 */
 	public boolean vacia(){
 	    return (this.tam==0);
 	}
 
+	/**
+	 * Agrega un elemento al final de la cola
+	 * @param elem Elemento a agregar
+	 */
 	public void encolar(E elem){
 	    ElemCola caja= new ElemCola(elem);
 	    if(this.tam==0){  
@@ -41,13 +54,18 @@ public class Cola<E>{
 	    this.tam++; 
 	}
 
+	/**
+	 * Devuelve el primer elemento de la cola.
+	 * Este elemento es borrado de la cola.
+	 * @return El primer elemento de la cola
+	 */
 	public E desencolar(){
 
 	    E primerElem= (E)this.primero.elemento;
 	    if(this.tam==1){
 	    	this.primero=null;
 	    	this.ultimo=null;
-	    }else{
+	    } else {
 	    	this.primero= this.primero.siguiente;
 	    }
 	    this.tam--;
